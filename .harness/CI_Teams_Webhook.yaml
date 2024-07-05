@@ -1,0 +1,45 @@
+pipeline:
+  name: CI Teams Webhook
+  identifier: CI_Teams_Webhook
+  projectIdentifier: SKOActon
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Teams Webhook Example
+        identifier: Teams_Webhook_Example
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: false
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Sample Output Steps
+                  identifier: Sample_Output_Steps
+                  spec:
+                    shell: Bash
+                    command: |-
+                      # Print some output and save to a variable
+
+                      export OUTPUT="This is some output I want to display downstream!"
+                    outputVariables:
+                      - name: OUTPUT
+              - step:
+                  type: Plugin
+                  name: Teams Webhook
+                  identifier: Teams_Webhook
+                  spec:
+                    connectorRef: Nics_Dockerhub
+                    image: plugins/webhook
+                    settings:
+                      urls: https://harnessio.webhook.office.com/webhookb2/0a224f5e-42a5-47ad-baf6-2adb089a0976@902ce9bd-e39e-4972-8a0c-5a4e39b96bd8/IncomingWebhook/1ca97b026bfe43cebdf45152c3039ca6/615a829f-e3cb-405b-8b75-b520355dfc6c
+                      content_type: application/json
+                      template: "{\"text\": \"<+execution.steps.Sample_Output_Steps.output.outputVariables.OUTPUT>\"}"
