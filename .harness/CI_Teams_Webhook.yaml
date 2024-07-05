@@ -40,7 +40,7 @@ pipeline:
                     connectorRef: Nic_Docker_Harness_Cloud
                     image: plugins/webhook
                     settings:
-                      urls: https://harnessio.webhook.office.com/webhookb2/0a224f5e-42a5-47ad-baf6-2adb089a0976@902ce9bd-e39e-4972-8a0c-5a4e39b96bd8/IncomingWebhook/1ca97b026bfe43cebdf45152c3039ca6/615a829f-e3cb-405b-8b75-b520355dfc6c
+                      urls: <+stage.variables.webhook_url>
                       content_type: application/json
                       template: "{\"text\": \"<+execution.steps.Sample_Output_Steps.output.outputVariables.OUTPUT>\"}"
         variables:
