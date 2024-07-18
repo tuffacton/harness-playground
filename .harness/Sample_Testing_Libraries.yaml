@@ -1,0 +1,69 @@
+pipeline:
+  name: Sample Testing Libraries
+  identifier: Sample_Testing_Libraries
+  projectIdentifier: SKOActon
+  orgIdentifier: default
+  tags: {}
+  description: In this example we'll use playwright but the same can be done for nearly all methods
+  stages:
+    - stage:
+        name: Unit Tests
+        identifier: Unit_Tests
+        description: "Assumes you ran the npm version of this guide prior: https://playwright.dev/docs/intro#installing-playwright"
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - parallel:
+                  - step:
+                      type: Run
+                      name: Make Playwright Reports
+                      identifier: Make_Playwright_Reports
+                      spec:
+                        connectorRef: account.james_dockerhub
+                        image: mcr.microsoft.com/playwright:v1.45.0-jammy
+                        shell: Bash
+                        command: |-
+                          # Install Node.js
+                          npm ci
+                          PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.xml npx playwright test --reporter=junit
+                        reports:
+                          type: JUnit
+                          spec:
+                            paths:
+                              - "*.xml"
+                  - step:
+                      type: Run
+                      name: Playwright JSON
+                      identifier: Playwright_JSON
+                      spec:
+                        connectorRef: Nic_Docker_Harness_Cloud
+                        image: mcr.microsoft.com/playwright:v1.45.0-jammy
+                        shell: Bash
+                        command: |-
+                          # Install Node.js
+                          npm ci
+                          PLAYWRIGHT_JUNIT_OUTPUT_NAME=results.json npx playwright test --reporter=json
+                          PLAYWRIGHT_JSON=$(cat results.json)
+              - step:
+                  type: Run
+                  name: ls
+                  identifier: ls
+                  spec:
+                    shell: Bash
+                    command: ls -R
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          caching:
+            enabled: false
+            paths: []
+  properties:
+    ci:
+      codebase:
+        repoName: playwright-examples
+        build: <+input>
