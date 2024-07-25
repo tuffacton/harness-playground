@@ -27,7 +27,7 @@ pipeline:
                   spec:
                     shell: Bash
                     command: |-
-                      <+ import org.apache.commons.jexl3.*;
+                      <+
                       import java.text.SimpleDateFormat;
                       import java.util.Date;
 
