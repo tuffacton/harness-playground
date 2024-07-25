@@ -1,0 +1,60 @@
+pipeline:
+  name: JEXL Playground
+  identifier: JEXL_Playground
+  projectIdentifier: SKOActon
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: JEXL Samples
+        identifier: JEXL_Samples
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: false
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Return Date and Time
+                  identifier: Return_Date_and_Time
+                  spec:
+                    shell: Bash
+                    command: |-
+                      <+ import org.apache.commons.jexl3.*;
+                      import java.text.SimpleDateFormat;
+                      import java.util.Date;
+
+                      public class JexlDateTimeFunction {
+                          public static void main(String[] args) {
+                              // Create or retrieve a JexlEngine
+                              JexlEngine jexl = new JexlBuilder().create();
+
+                              // Define the function
+                              JexlContext jc = new MapContext();
+                              jc.set("getFormattedDateTime", new GetFormattedDateTime());
+
+                              // Create an expression
+                              JexlExpression e = jexl.createExpression("getFormattedDateTime()");
+
+                              // Evaluate the expression
+                              Object result = e.evaluate(jc);
+
+                              // Print the result
+                              System.out.println(result);
+                          }
+
+                          public static class GetFormattedDateTime {
+                              public String call() {
+                                  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                  return sdf.format(new Date());
+                              }
+                          }
+                      }
+                      >
