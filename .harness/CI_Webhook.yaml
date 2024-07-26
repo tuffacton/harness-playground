@@ -1,0 +1,166 @@
+pipeline:
+  name: Unit Test Viewing Options
+  identifier: Unit_Test_Viewing_Options
+  projectIdentifier: SKOActon
+  orgIdentifier: default
+  description: In this example we'll use playwright but the same can be done for nearly all methods
+  tags: {}
+  stages:
+    - stage:
+        name: Unit Tests
+        identifier: Unit_Tests
+        description: "Assumes you ran the npm version of this guide prior: https://playwright.dev/docs/intro#installing-playwright"
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Playwright JSON
+                  identifier: Playwright_JSON
+                  spec:
+                    connectorRef: Nic_Docker_Harness_Cloud
+                    image: mcr.microsoft.com/playwright:v1.45.0-jammy
+                    shell: Bash
+                    command: |-
+                      # Install Node.js
+                      npm ci
+                      npx playwright test
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - /harness/test-results.xml
+                  description: "Ensure that your playwright job is set to use both JUnit XML and JSON exporters in the config file: https://playwright.dev/docs/test-reporters#multiple-reporters"
+              - parallel:
+                  - step:
+                      type: Run
+                      name: Extract Results and Send
+                      identifier: Extract_Playwright_Results
+                      spec:
+                        connectorRef: Nic_Docker_Harness_Cloud
+                        image: linuxserver/yq
+                        shell: Bash
+                        command: |-
+                          # Extract results from previous tests
+                          EXPECTED=$(jq -r '.stats.expected' /harness/test-results.json)
+                          SKIPPED=$(jq -r '.stats.skipped' /harness/test-results.json)
+                          UNEXPECTED=$(jq -r '.stats.unexpected' /harness/test-results.json)
+                          FLAKY=$(jq -r '.stats.flaky' /harness/test-results.json)
+                          # Save the date and time this step is approximately started
+                          DATETIME=$(date "+%d/%m/%Y %I:%M %p")
+
+                          # Send and Adaptive Card to MS Teams Webhook
+                          curl -H 'Content-Type: application/json' -X POST <+variable.MS_Teams_Test_Webhook_URL> \
+                          --data-binary @- << EOF
+                          {
+                              "type": "AdaptiveCard",
+                              "body": [
+                                  {
+                                      "type": "TextBlock",
+                                      "size": "Large",
+                                      "weight": "Bolder",
+                                      "text": "Harness CI - Playwright Test Results"
+                                  },
+                                  {
+                                      "type": "ColumnSet",
+                                      "columns": [
+                                          {
+                                              "type": "Column",
+                                              "items": [
+                                                  {
+                                                      "type": "Image",
+                                                      "url": "https://developer.harness.io/img/icon_ci.svg",
+                                                      "altText": "Harness CI",
+                                                      "size": "Small"
+                                                  }
+                                              ],
+                                              "width": "auto"
+                                          },
+                                          {
+                                              "type": "Column",
+                                              "items": [
+                                                  {
+                                                      "type": "TextBlock",
+                                                      "weight": "Bolder",
+                                                      "text": "Harness CI",
+                                                      "wrap": true
+                                                  },
+                                                  {
+                                                      "type": "TextBlock",
+                                                      "spacing": "None",
+                                                      "text": "$DATETIME",
+                                                      "isSubtle": true,
+                                                      "wrap": true
+                                                  }
+                                              ],
+                                              "width": "stretch"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "TextBlock",
+                                      "text": "Results from playwright toolset",
+                                      "wrap": true
+                                  },
+                                  {
+                                      "type": "FactSet",
+                                      "facts": [
+                                          {
+                                              "title": "Expected:",
+                                              "value": "$EXPECTED"
+                                          },
+                                          {
+                                              "title": "Skipped:",
+                                              "value": "$SKIPPED"
+                                          },
+                                          {
+                                              "title": "Unexpected:",
+                                              "value": "$UNEXPECTED"
+                                          },
+                                          {
+                                              "title": "Flaky:",
+                                              "value": "$FLAKY"
+                                          }
+                                      ]
+                                  }
+                              ],
+                              "actions": [
+                                  {
+                                      "type": "Action.OpenUrl",
+                                      "title": "View Pipeline Execution",
+                                      "url": "<+pipeline.executionUrl>"
+                                  }
+                              ],
+                              "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                              "version": "1.5"
+                          }
+                          EOF
+                  - step:
+                      type: Run
+                      name: Send to Slack
+                      identifier: Send_to_Slack
+                      spec:
+                        shell: Bash
+                        command: "# Extract results from previous tests\nEXPECTED=$(jq -r '.stats.expected' /harness/test-results.json)\nSKIPPED=$(jq -r '.stats.skipped' /harness/test-results.json)\nUNEXPECTED=$(jq -r '.stats.unexpected' /harness/test-results.json)\nFLAKY=$(jq -r '.stats.flaky' /harness/test-results.json)\n# Save the date and time this step is approximately started\nDATETIME=$(date \"+%d/%m/%Y %I:%M %p\")\n\n# Send and Adaptive Card to MS Teams Webhook\ncurl -H 'Content-Type: application/json' -X POST <+variable.Slack_Webhook> \\\n--data-binary @- << EOF\n{\n\t\"blocks\": [\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Playwright Run:\\n*<<+pipeline.executionUrl>|Harness Pipeline Execution at $DATETIME>*\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*Expected:* $EXPECTED \\n*Unexpected:* $UNEXPECTED \\n*Skipped:* $SKIPPED \\n*Flaky:* $FLAKY\"\n\t\t\t},\n\t\t\t\"accessory\": {\n\t\t\t\t\"type\": \"image\",\n\t\t\t\t\"image_url\": \"https://miro.medium.com/v2/resize:fit:953/0*w_ivMwMdr2YvH8bB.png\",\n\t\t\t\t\"alt_text\": \"Playwright Tests\"\n\t\t\t}\n\t\t}\n\t]\n}\nEOF"
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          caching:
+            enabled: false
+            paths: []
+        variables:
+          - name: webhook_url
+            type: String
+            description: ""
+            required: false
+            value: <+variable.MS_Teams_Test_Webhook_URL>
+  properties:
+    ci:
+      codebase:
+        repoName: playwright-examples
+        build: <+input>
