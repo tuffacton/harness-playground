@@ -24,21 +24,16 @@ pipeline:
           execution:
             steps:
               - step:
-                  type: Plugin
-                  name: Build with Buildah
-                  identifier: Build_with_Buildah
+                  type: Run
+                  name: BuildKit
+                  identifier: BuildKit
                   spec:
                     connectorRef: Nics_Dockerhub
-                    image: plugins/buildah-docker
-                    settings:
-                      repo: docker.io/tuffacton/nginx
-                      registry: docker.io
-                      password: <+secrets.getValue("NicDHPAT")>
-                      username: tuffacton
-                      dockerfile: mainline/debian/Dockerfile
-                      tags: buildahoutput
-                      layers: "true"
-                  description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
+                    image: moby/buildkit:master-rootless
+                    shell: Bash
+                    command: |-
+                      cd stable/alpine-slim/
+                      buildctl build --output type=image,name=docker.io/tuffacton/nginx,push=true
           infrastructure:
             type: KubernetesDirect
             spec:
