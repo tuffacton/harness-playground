@@ -35,7 +35,7 @@ pipeline:
                   identifier: Build_with_Buildah
                   spec:
                     connectorRef: Nic_Docker_Harness_Cloud
-                    image: plugins/buildah
+                    image: plugins/buildah-docker
                     settings:
                       repo: docker.io/tuffacton/nginx
                       registry: docker.io
