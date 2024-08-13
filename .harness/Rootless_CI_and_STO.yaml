@@ -30,7 +30,7 @@ pipeline:
                   spec:
                     connectorRef: Nics_Dockerhub
                     image: moby/buildkit:master-rootless
-                    shell: Bash
+                    shell: Sh
                     command: |-
                       cd stable/alpine-slim/
                       buildctl build --output type=image,name=docker.io/tuffacton/nginx,push=true
