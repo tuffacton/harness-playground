@@ -21,12 +21,6 @@ pipeline:
           cloneCodebase: true
           caching:
             enabled: true
-          platform:
-            os: Linux
-            arch: Arm64
-          runtime:
-            type: Cloud
-            spec: {}
           execution:
             steps:
               - step:
@@ -34,7 +28,7 @@ pipeline:
                   name: Build with Buildah
                   identifier: Build_with_Buildah
                   spec:
-                    connectorRef: Nic_Docker_Harness_Cloud
+                    connectorRef: Nics_Dockerhub
                     image: plugins/buildah-docker
                     settings:
                       repo: docker.io/tuffacton/nginx
@@ -45,3 +39,11 @@ pipeline:
                       tags: buildahoutput
                       layers: "true"
                   description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: account.sesandboxdelegate
+              namespace: builds
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
