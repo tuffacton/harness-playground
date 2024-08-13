@@ -1,0 +1,47 @@
+pipeline:
+  name: Rootless CI and STO
+  identifier: Rootless_CI_and_STO
+  projectIdentifier: SKOActon
+  orgIdentifier: default
+  description: Experimental situations running CI and STO in situations where customers cannot use root, --privileged, or Docker-in-Docker in secure environments.
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: Nic_Github_Cloud
+        repoName: nginxinc/docker-nginx
+        build: <+input>
+  stages:
+    - stage:
+        name: Build and Security
+        identifier: Build_and_Security
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Plugin
+                  name: Build with Buildah
+                  identifier: Build_with_Buildah
+                  spec:
+                    connectorRef: Nic_Docker_Harness_Cloud
+                    image: plugins/buildah
+                    settings:
+                      repo: docker.io/tuffacton/nginx
+                      registry: docker.io
+                      password: <+secrets.getValue("NicDHPAT")>
+                      username: tuffacton
+                      dockerfile: mainline/debian/Dockerfile
+                      tags: buildahoutput
+                      layers: "true"
+                  description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
