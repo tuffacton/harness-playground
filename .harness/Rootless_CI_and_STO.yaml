@@ -32,15 +32,6 @@ pipeline:
                         branch: main
               - step:
                   type: Run
-                  name: Run_2
-                  identifier: Run_2
-                  spec:
-                    connectorRef: Nics_Dockerhub
-                    image: ubuntu:latest
-                    shell: Sh
-                    command: ls
-              - step:
-                  type: Run
                   name: BuildKit
                   identifier: BuildKit
                   spec:
@@ -50,8 +41,8 @@ pipeline:
                     command: |-
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
-                      --local context = /harness/docker_build/ \
-                      --local dockerfile = /harness/docker_build/Dockerfile
+                      --local context=/harness/docker_build/ \
+                      --local dockerfile=/harness/docker_build/Dockerfile
                     resources:
                       limits:
                         memory: 500M
