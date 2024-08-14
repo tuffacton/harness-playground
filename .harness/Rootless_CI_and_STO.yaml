@@ -32,18 +32,6 @@ pipeline:
                         branch: main
               - step:
                   type: Run
-                  name: Set Docker Auth
-                  identifier: Set_Docker_Auth
-                  spec:
-                    connectorRef: Nics_Dockerhub
-                    image: ubuntu:latest
-                    shell: Bash
-                    command: |-
-                      cat > /harness/docker.config << 'EOF' 
-                      <+secrets.getValue("docker-auth-config")>
-                      EOF
-              - step:
-                  type: Run
                   name: BuildKit
                   identifier: BuildKit
                   spec:
@@ -51,7 +39,10 @@ pipeline:
                     image: tuffacton/buildkit:latest
                     shell: Sh
                     command: |-
+                      # Setup Docker Auth
                       DOCKER_CONFIG=harness
+                      echo <+secrets.getValue("docker-config-base64")> | base64 -d > config.json
+
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
                       --local context=/harness/docker_build/ \
