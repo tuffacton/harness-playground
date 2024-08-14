@@ -32,13 +32,13 @@ pipeline:
                     image: moby/buildkit:master-rootless
                     shell: Sh
                     command: |-
-                      cd stable/alpine-slim/
-                      buildctl build --frontend dockerfile.v0 --output type=image,name=docker.io/tuffacton/nginx,push=true
+                      buildctl --addr tcp:10-48-5-20.nicacton.buildkitd.cluster.local \
+                      build --frontend dockerfile.v0 --local context=docker_build --local dockerfile=docker_build/Dockerfile
           infrastructure:
             type: KubernetesDirect
             spec:
               connectorRef: account.sesandboxdelegate
-              namespace: builds
+              namespace: nicacton
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
