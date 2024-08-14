@@ -32,6 +32,15 @@ pipeline:
                         branch: main
               - step:
                   type: Run
+                  name: Set Docker Auth
+                  identifier: Set_Docker_Auth
+                  spec:
+                    connectorRef: Nics_Dockerhub
+                    image: ubuntu:latest
+                    shell: Bash
+                    command: echo <+secrets.getValue("docker-auth-base64")> | base64 -d > /harness/config.js
+              - step:
+                  type: Run
                   name: BuildKit
                   identifier: BuildKit
                   spec:
@@ -39,8 +48,7 @@ pipeline:
                     image: tuffacton/buildkit:latest
                     shell: Sh
                     command: |-
-                      echo <+secrets.getValue("docker-auth-base64")> | base64 -d > ~/.docker/config.js
-
+                      DOCKER_CONFIG=harness
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
                       --local context=/harness/docker_build/ \
@@ -60,3 +68,5 @@ pipeline:
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
+          sharedPaths:
+            - ""
