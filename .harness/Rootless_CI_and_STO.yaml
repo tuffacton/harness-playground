@@ -36,7 +36,7 @@ pipeline:
                   identifier: BuildKit
                   spec:
                     connectorRef: Nics_Dockerhub
-                    image: moby/buildkit:master-rootless
+                    image: tuffacton/buildkit:latest
                     shell: Sh
                     command: |-
                       buildctl --addr kube-pod://buildkitd \
