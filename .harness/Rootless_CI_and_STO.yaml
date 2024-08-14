@@ -44,6 +44,7 @@ pipeline:
                       build --frontend dockerfile.v0 \
                       --local context=/harness/docker_build/ \
                       --local dockerfile=/harness/docker_build/
+                    privileged: true
                     resources:
                       limits:
                         memory: 500M
