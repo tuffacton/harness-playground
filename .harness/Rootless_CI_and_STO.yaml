@@ -31,6 +31,15 @@ pipeline:
                         branch: main
               - step:
                   type: Run
+                  name: Run_2
+                  identifier: Run_2
+                  spec:
+                    connectorRef: Nics_Dockerhub
+                    image: ubuntu:latest
+                    shell: Sh
+                    command: ls
+              - step:
+                  type: Run
                   name: BuildKit
                   identifier: BuildKit
                   spec:
