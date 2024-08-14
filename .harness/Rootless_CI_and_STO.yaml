@@ -5,12 +5,6 @@ pipeline:
   orgIdentifier: default
   description: Experimental situations running CI and STO in situations where customers cannot use root, --privileged, or Docker-in-Docker in secure environments.
   tags: {}
-  properties:
-    ci:
-      codebase:
-        connectorRef: Nic_Github_Cloud
-        repoName: nginxinc/docker-nginx
-        build: <+input>
   stages:
     - stage:
         name: Build and Security
@@ -18,11 +12,23 @@ pipeline:
         description: ""
         type: CI
         spec:
-          cloneCodebase: true
+          cloneCodebase: false
           caching:
             enabled: true
+            paths: []
           execution:
             steps:
+              - step:
+                  type: GitClone
+                  name: GitClone_1
+                  identifier: GitClone_1
+                  spec:
+                    connectorRef: Nic_Github
+                    repoName: tuffacton/harness-playground
+                    build:
+                      type: branch
+                      spec:
+                        branch: main
               - step:
                   type: Run
                   name: BuildKit
