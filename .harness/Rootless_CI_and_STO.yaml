@@ -48,11 +48,10 @@ pipeline:
                     image: moby/buildkit:master-rootless
                     shell: Sh
                     command: |-
-                      cd docker_build
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
-                      --local context =. \
-                      --local dockerfile =.
+                      --local context = /harness/docker_build/ \
+                      --local dockerfile = /harness/docker_build/Dockerfile
                     resources:
                       limits:
                         memory: 500M
