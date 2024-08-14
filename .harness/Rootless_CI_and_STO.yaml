@@ -39,10 +39,13 @@ pipeline:
                     image: tuffacton/buildkit:latest
                     shell: Sh
                     command: |-
+                      <+secrets.getValue("docker-auth-base64")> | base64 -d > ~/.docker/config.js
+
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
                       --local context=/harness/docker_build/ \
-                      --local dockerfile=/harness/docker_build/
+                      --local dockerfile=/harness/docker_build/ \
+                      --output type=image,name=docker.io/tuffacton/hello-sample,push=true
                     privileged: true
                     resources:
                       limits:
