@@ -52,6 +52,7 @@ pipeline:
             spec:
               connectorRef: account.sesandboxdelegate
               namespace: nicacton
+              serviceAccountName: buildkit-service-account
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
