@@ -38,7 +38,10 @@ pipeline:
                     connectorRef: Nics_Dockerhub
                     image: ubuntu:latest
                     shell: Bash
-                    command: echo <+secrets.getValue("docker-auth-base64")> | base64 -d > /harness/config.js
+                    command: |-
+                      cat > /harness/docker.config << 'EOF' 
+                      <+secrets.getValue("docker-auth-config")>
+                      EOF
               - step:
                   type: Run
                   name: BuildKit
