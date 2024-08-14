@@ -39,7 +39,6 @@ pipeline:
                     image: tuffacton/buildkit:latest
                     shell: Sh
                     command: |-
-                      docker login
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
                       --local context=/harness/docker_build/ \
