@@ -38,7 +38,7 @@ pipeline:
                     image: moby/buildkit:master-rootless
                     shell: Sh
                     command: |-
-                      buildctl --addr tcp:10-48-5-20.nicacton.buildkitd.cluster.local \
+                      buildctl --addr kube-pod:buildkitd \
                       build --frontend dockerfile.v0 --local context=docker_build --local dockerfile=docker_build/Dockerfile
                     resources:
                       limits:
