@@ -34,6 +34,10 @@ pipeline:
                     command: |-
                       buildctl --addr tcp:10-48-5-20.nicacton.buildkitd.cluster.local \
                       build --frontend dockerfile.v0 --local context=docker_build --local dockerfile=docker_build/Dockerfile
+                    resources:
+                      limits:
+                        memory: 500M
+                        cpu: "1"
           infrastructure:
             type: KubernetesDirect
             spec:
