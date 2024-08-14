@@ -39,7 +39,7 @@ pipeline:
                     image: tuffacton/buildkit:latest
                     shell: Sh
                     command: |-
-                      <+secrets.getValue("docker-auth-base64")> | base64 -d > ~/.docker/config.js
+                      echo <+secrets.getValue("docker-auth-base64")> | base64 -d > ~/.docker/config.js
 
                       buildctl --addr kube-pod://buildkitd \
                       build --frontend dockerfile.v0 \
