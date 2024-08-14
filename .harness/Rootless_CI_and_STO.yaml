@@ -25,6 +25,7 @@ pipeline:
                   spec:
                     connectorRef: Nic_Github
                     repoName: tuffacton/harness-playground
+                    cloneDirectory: /harness/
                     build:
                       type: branch
                       spec:
