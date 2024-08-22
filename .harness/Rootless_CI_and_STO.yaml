@@ -34,8 +34,8 @@ pipeline:
                   name: Build with Buildah
                   identifier: Build_with_Buildah
                   spec:
-                    connectorRef: Quay
-                    image: buildah/stable:v1.36.0
+                    connectorRef: Nic_Docker_Harness_Cloud
+                    image: plugins/buildah
                     settings:
                       repo: docker.io/tuffacton/nginx
                       registry: docker.io
