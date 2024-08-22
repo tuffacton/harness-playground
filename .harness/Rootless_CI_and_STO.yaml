@@ -36,13 +36,12 @@ pipeline:
                   identifier: Build_with_Buildah
                   spec:
                     connectorRef: Nic_Docker_Harness_Cloud
-                    image: plugins/buildah-docker
+                    image: plugins/buildah-docker:1.2.1-linux-amd64
                     settings:
-                      repo: docker.io/tuffacton/nginx
-                      registry: docker.io
+                      repo: tuffacton/nginx
+                      registry: https://index.docker.io/v2/
                       password: <+secrets.getValue("NicDHPAT")>
                       username: tuffacton
                       dockerfile: mainline/debian/Dockerfile
                       tags: buildahoutput
-                      layers: "true"
                   description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
