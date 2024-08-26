@@ -8,7 +8,7 @@ pipeline:
   properties:
     ci:
       codebase:
-        connectorRef: Nic_Github_Cloud
+        connectorRef: Nic_Github
         repoName: nginxinc/docker-nginx
         build: <+input>
         sparseCheckout: []
@@ -30,7 +30,7 @@ pipeline:
                   name: Build with Buildah
                   identifier: Build_with_Buildah
                   spec:
-                    connectorRef: Nic_Docker_Harness_Cloud
+                    connectorRef: Nics_Dockerhub
                     image: plugins/buildah-docker:1.2
                     settings:
                       repo: tuffacton/nginx
@@ -38,9 +38,11 @@ pipeline:
                       dockerfile: mainline/debian/Dockerfile
                       tags: buildahoutput
                   description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: account.sesandboxdelegate
+              namespace: builds
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
