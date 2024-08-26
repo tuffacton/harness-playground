@@ -30,7 +30,7 @@ pipeline:
                   name: Build with Buildah
                   identifier: Build_with_Buildah
                   spec:
-                    connectorRef: Nics_Dockerhub
+                    connectorRef: Nic_Docker_Harness_Cloud
                     image: plugins/buildah-docker:1.2
                     settings:
                       repo: tuffacton/nginx
@@ -38,11 +38,9 @@ pipeline:
                       dockerfile: mainline/debian/Dockerfile
                       tags: buildahoutput
                   description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
-          infrastructure:
-            type: KubernetesDirect
-            spec:
-              connectorRef: account.sesandboxdelegate
-              namespace: builds
-              automountServiceAccountToken: true
-              nodeSelector: {}
-              os: Linux
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
