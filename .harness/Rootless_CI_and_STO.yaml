@@ -37,12 +37,13 @@ pipeline:
                       registry: https://index.docker.io/v2/
                       dockerfile: mainline/debian/Dockerfile
                       tags: buildahoutput
+                    runAsUser: "1000"
                   description: https://developer.harness.io/docs/continuous-integration/use-ci/build-and-upload-artifacts/build-and-push-nonroot#use-the-buildah-plugin
           infrastructure:
             type: KubernetesDirect
             spec:
               connectorRef: account.sesandboxdelegate
-              namespace: builds
+              namespace: nicacton
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
