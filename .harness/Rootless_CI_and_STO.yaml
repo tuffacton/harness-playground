@@ -8,7 +8,7 @@ pipeline:
   properties:
     ci:
       codebase:
-        connectorRef: Nic_Github
+        connectorRef: Nic_Github_Cloud
         repoName: nginxinc/docker-nginx
         build: <+input>
         sparseCheckout: []
