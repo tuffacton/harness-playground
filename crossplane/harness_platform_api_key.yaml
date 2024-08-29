@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: platform-api-key-secret
-type: Opaque
-data:
-  platform_api_key: <base64_encoded_platform_api_key>
