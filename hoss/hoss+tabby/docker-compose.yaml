@@ -1,0 +1,27 @@
+version: '3.5'
+
+services:
+  tabby:
+    restart: always
+    image: registry.tabbyml.com/tabbyml/tabby
+    command: serve --model StarCoder-1B --chat-model Qwen2-1.5B-Instruct --device cuda
+    volumes:
+      - "$HOME/.tabby:/data"
+    ports:
+      - 8080:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  gitness:
+    image: harness/gitness
+    container_name: gitness
+    ports:
+      - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/gitness:/data
+    restart: always
