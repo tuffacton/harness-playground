@@ -1,0 +1,14 @@
+inputSet:
+  name: GitExp Input
+  identifier: GitExp_Input
+  orgIdentifier: default
+  projectIdentifier: SKOActon
+  pipeline:
+    identifier: Custom_CI
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
