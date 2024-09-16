@@ -31,7 +31,7 @@ pipeline:
                         script: |-
                           # Replace NicGHPAT with your actual GH PAT
                           # This will still pass if the clone fails because the repo still exists
-                          git clone https://<+stage.variables.gh_PAT>:@github.com/<+stage.variables.gh_user>/<+stage.variables.repo_name> || true
+                          git clone https://<+stage.variables.gh_PAT>:@github.com/<+stage.variables.repo_name> -b <+trigger.payload.pull_request.head.ref> || true
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
@@ -47,7 +47,7 @@ pipeline:
                       spec:
                         script: |-
                           # An example to represent working with the repo contents
-                          ls <+stage.variables.repo_name>
+                          ls <+trigger.payload.repository.name>
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
@@ -63,7 +63,7 @@ pipeline:
                       spec:
                         script: |-
                           # Be very careful with this!
-                          rm -Rf <+stage.variables.repo_name>
+                          rm -Rf <+trigger.payload.repository.name>
                     environmentVariables: []
                     outputVariables: []
                   timeout: 10m
@@ -75,12 +75,7 @@ pipeline:
             type: String
             description: ""
             required: true
-            value: sample-private
-          - name: gh_user
-            type: String
-            description: ""
-            required: true
-            value: tuffacton
+            value: <+trigger.payload.pull_request.head.repo.full_name>
           - name: gh_PAT
             type: String
             description: ""
